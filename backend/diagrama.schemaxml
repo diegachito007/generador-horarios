@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemadesigner version="6.5">
+<source>
+<database charset="utf8mb4" collation="utf8mb4_0900_ai_ci">schedule_generator</database>
+</source>
+<canvas zoom="100">
+<tables>
+<table name="institutions" view="colnames">
+<left>671</left>
+<top>236</top>
+<width>133</width>
+<height>282</height>
+<sql_create_table>CREATE TABLE `institutions` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint unsigned NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `code` varchar(50) NOT NULL,
+  `logo` varchar(500) DEFAULT NULL,
+  `academic_year` varchar(50) NOT NULL,
+  `address` text,
+  `phone` varchar(20) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `website` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_institutions_code` (`code`,`user_id`),
+  KEY `idx_institutions_user` (`user_id`),
+  CONSTRAINT `institutions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</sql_create_table>
+</table>
+<table name="jornadas" view="colnames">
+<left>471</left>
+<top>40</top>
+<width>130</width>
+<height>231</height>
+<sql_create_table>CREATE TABLE `jornadas` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `institution_id` bigint unsigned NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `blocks` int NOT NULL DEFAULT '6',
+  `block_duration` int NOT NULL DEFAULT '45',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_jornadas_institution` (`institution_id`),
+  CONSTRAINT `jornadas_ibfk_1` FOREIGN KEY (`institution_id`) REFERENCES `institutions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</sql_create_table>
+</table>
+<table name="licenses" view="colnames">
+<left>162</left>
+<top>37</top>
+<width>139</width>
+<height>282</height>
+<sql_create_table>CREATE TABLE `licenses` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `type` enum('basic','professional','consultant') NOT NULL,
+  `license_key` varchar(100) NOT NULL,
+  `max_institutions` int NOT NULL DEFAULT '2',
+  `status` enum('active','suspended','expired') NOT NULL DEFAULT 'active',
+  `price` decimal(10,2) NOT NULL,
+  `is_lifetime` tinyint(1) NOT NULL DEFAULT '0',
+  `purchase_date` date NOT NULL,
+  `expiry_date` date DEFAULT NULL,
+  `notes` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `license_key` (`license_key`),
+  KEY `idx_licenses_status` (`status`),
+  KEY `idx_licenses_type` (`type`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</sql_create_table>
+</table>
+<table name="migrations" view="colnames">
+<left>34</left>
+<top>38</top>
+<width>100</width>
+<height>129</height>
+<sql_create_table>CREATE TABLE `migrations` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch` int NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci</sql_create_table>
+</table>
+<table name="schedules" view="colnames">
+<left>471</left>
+<top>302</top>
+<width>122</width>
+<height>231</height>
+<sql_create_table>CREATE TABLE `schedules` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `institution_id` bigint unsigned NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `score` int NOT NULL DEFAULT '0',
+  `is_valid` tinyint(1) NOT NULL DEFAULT '0',
+  `is_active` tinyint(1) NOT NULL DEFAULT '0',
+  `generated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_schedules_institution` (`institution_id`),
+  KEY `idx_schedules_active` (`is_active`),
+  CONSTRAINT `schedules_ibfk_1` FOREIGN KEY (`institution_id`) REFERENCES `institutions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</sql_create_table>
+</table>
+<table name="subject_priorities" view="colnames">
+<left>324</left>
+<top>38</top>
+<width>126</width>
+<height>163</height>
+<sql_create_table>CREATE TABLE `subject_priorities` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `subject_name` varchar(255) NOT NULL,
+  `priority` tinyint NOT NULL DEFAULT '5',
+  `description` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</sql_create_table>
+</table>
+<table name="subjects" view="colnames">
+<left>874</left>
+<top>30</top>
+<width>118</width>
+<height>248</height>
+<sql_create_table>CREATE TABLE `subjects` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `institution_id` bigint unsigned NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `code` varchar(50) DEFAULT NULL,
+  `priority` tinyint NOT NULL DEFAULT '5',
+  `is_specialist` tinyint(1) NOT NULL DEFAULT '0',
+  `color` varchar(7) NOT NULL DEFAULT '#3B82F6',
+  `description` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_subjects_institution` (`institution_id`),
+  KEY `idx_subjects_priority` (`priority`),
+  CONSTRAINT `subjects_ibfk_1` FOREIGN KEY (`institution_id`) REFERENCES `institutions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</sql_create_table>
+</table>
+<table name="teachers" view="colnames">
+<left>1069</left>
+<top>217</top>
+<width>118</width>
+<height>299</height>
+<sql_create_table>CREATE TABLE `teachers` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `institution_id` bigint unsigned NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `last_name` varchar(255) NOT NULL,
+  `specialty` varchar(255) DEFAULT NULL,
+  `type` enum('grado','especialista') NOT NULL DEFAULT 'especialista',
+  `max_hours` tinyint NOT NULL DEFAULT '25',
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `identification` varchar(20) DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_teachers_institution` (`institution_id`),
+  KEY `idx_teachers_type` (`type`),
+  CONSTRAINT `teachers_ibfk_1` FOREIGN KEY (`institution_id`) REFERENCES `institutions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</sql_create_table>
+</table>
+<table name="users" view="colnames">
+<left>871</left>
+<top>323</top>
+<width>145</width>
+<height>248</height>
+<sql_create_table>CREATE TABLE `users` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `email_verified_at` timestamp NULL DEFAULT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('superadmin','user') NOT NULL DEFAULT 'user',
+  `license_id` bigint unsigned DEFAULT NULL,
+  `remember_token` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`),
+  KEY `idx_users_role` (`role`),
+  KEY `idx_users_email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</sql_create_table>
+</table>
+<table name="validation_errors" view="colnames">
+<left>324</left>
+<top>362</top>
+<width>113</width>
+<height>180</height>
+<sql_create_table>CREATE TABLE `validation_errors` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `schedule_id` bigint unsigned NOT NULL,
+  `error_type` enum('teacher_conflict','course_conflict','missing_hours','overload','bad_distribution','wrong_block') NOT NULL,
+  `message` varchar(255) NOT NULL,
+  `details` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_validation_schedule` (`schedule_id`),
+  CONSTRAINT `validation_errors_ibfk_1` FOREIGN KEY (`schedule_id`) REFERENCES `schedules` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</sql_create_table>
+</table>
+</tables>
+</canvas>
+</schemadesigner>
