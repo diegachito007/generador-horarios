@@ -1,5 +1,69 @@
+# ===== DEPENDENCIAS =====
 node_modules/
-.next/
+backend/vendor/
+backend/vendor/phpunit/
+
+# ===== ARCHIVOS DE ENTORNO (contienen contraseñas) =====
+.env
+.env.local
+.env.production
+.env.backup
+backend/.env
+backend/.env.local
+
+# ===== LARAVEL =====
+backend/storage/
+backend/bootstrap/cache/
+backend/.phpunit.result.cache
+backend/Homestead.json
+backend/Homestead.yaml
+backend/auth.json
+backend/npm-debug.log
+backend/yarn-error.log
+
+# ===== BUILD / COMPILACIÓN =====
 dist/
 build/
+.next/
+out/
+*.tsbuildinfo
+
+# ===== LOGS =====
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# ===== EDITORES / IDE =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# ===== SISTEMA OPERATIVO =====
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ===== TESTING =====
+coverage/
+.nyc_output/
+.phpunit.result.cache
+
+# ===== OTROS =====
+*.local
+*.cache
+*.map
